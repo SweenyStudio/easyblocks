@@ -20,8 +20,9 @@ import { SpaceTokenWidget } from "./sidebar/SpaceTokenWidget";
 import { parseQueryParams } from "./parseQueryParams";
 import { DocumentDataWidgetComponent } from "./sidebar/DocumentDataWidget";
 import { ExternalDataChangeHandler } from "./EasyblocksEditorProps";
+import { EditorModeProps } from "./types";
 
-type EasyblocksParentProps = {
+type CommonProps = {
   config: Config;
   externalData: FetchOutputResources;
   onExternalDataChange: ExternalDataChangeHandler;
@@ -32,6 +33,8 @@ type EasyblocksParentProps = {
   >;
   components?: Record<string, ComponentType<any>>;
 };
+
+type EasyblocksParentProps = CommonProps & EditorModeProps;
 
 const shouldForwardProp: ShouldForwardProp<"web"> = (propName, target) => {
   if (typeof target === "string") {
@@ -49,7 +52,12 @@ const builtinWidgets: EasyblocksParentProps["widgets"] = {
 };
 
 export function EasyblocksParent(props: EasyblocksParentProps) {
-  const editorSearchParams = parseQueryParams();
+  const editorParams =
+    props.editorMode === "asComponent"
+      ? props.editorParams
+      : parseQueryParams();
+
+  console.log("editorParams", editorParams);
 
   return (
     <StyleSheetManager
@@ -70,11 +78,11 @@ export function EasyblocksParent(props: EasyblocksParentProps) {
           />
           <Editor
             config={props.config}
-            locale={editorSearchParams.locale ?? undefined}
-            readOnly={editorSearchParams.readOnly ?? true}
-            documentId={editorSearchParams.documentId}
-            rootComponentId={editorSearchParams.rootComponentId ?? null}
-            rootTemplateId={editorSearchParams.rootTemplateId}
+            locale={editorParams.locale ?? undefined}
+            readOnly={editorParams.readOnly ?? true}
+            documentId={editorParams.documentId}
+            rootComponentId={editorParams.rootComponentId ?? null}
+            rootTemplateId={editorParams.rootTemplateId}
             externalData={props.externalData}
             onExternalDataChange={props.onExternalDataChange}
             widgets={{

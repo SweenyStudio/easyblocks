@@ -35,12 +35,7 @@ import {
   traverseComponents,
 } from "@easyblocks/core/_internals";
 import { Colors, Fonts, useToaster } from "@easyblocks/design-system";
-import {
-  assertDefined,
-  dotNotationGet,
-  uniqueId,
-  useForceRerender,
-} from "@easyblocks/utils";
+import { dotNotationGet, uniqueId, useForceRerender } from "@easyblocks/utils";
 import throttle from "lodash.throttle";
 import React, {
   ComponentType,
@@ -233,6 +228,8 @@ function EditorBackendInitializer(props: EditorProps) {
 
 const EditorWrapper = memo(
   (props: EditorProps & { document: Document | null }) => {
+    console.log("EditorWrapper", props);
+
     if (!props.document) {
       if (props.rootTemplateId) {
         if (props.rootComponentId) {
@@ -516,7 +513,7 @@ function calculateViewportRelatedStuff(
   // Calculate width, height and scale
   let width, height: number;
   let scaleFactor: number | null = null;
-  let offsetY: number = 0;
+  let offsetY = 0;
 
   if (!availableSize) {
     // lack of available size (first render) should wait until size is available to perform calculations

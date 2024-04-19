@@ -11,6 +11,10 @@ import { serialize } from "@easyblocks/utils";
 
 export const PreviewRenderer: React.FC<EasyblocksEditorProps> = (props) => {
   const config = props.config;
+  const editorParams =
+    props.editorMode === "asComponent"
+      ? props.editorParams
+      : parseQueryParams();
 
   const [data, setData] = useState<{
     renderableDocument: RenderableDocument;
@@ -21,7 +25,7 @@ export const PreviewRenderer: React.FC<EasyblocksEditorProps> = (props) => {
   const [widthAuto, setWidthAuto] = useState<boolean>(false);
 
   useEffect(() => {
-    const { documentId, templateId, locale } = parseQueryParams();
+    const { documentId, templateId, locale } = editorParams;
 
     let mode: "template" | "document";
 

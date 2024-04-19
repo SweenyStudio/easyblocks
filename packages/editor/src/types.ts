@@ -113,3 +113,21 @@ export type InternalWidgetComponentProps = Omit<
   resourceKey?: string;
   path: string;
 };
+
+export type EditorParams = {
+  readOnly: boolean | null;
+  documentId: string | null;
+  templateId: string | null;
+  rootComponentId: string | null;
+  rootTemplateId: string | null;
+  locale: string | null;
+  preview: boolean;
+  debug: boolean;
+};
+
+export type EditorModeProps =
+  | { editorMode?: "asPage" }
+  | {
+      editorMode: "asComponent";
+      editorParams: EditorParams;
+    };
