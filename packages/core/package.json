@@ -66,8 +66,5 @@
     "package.json",
     "LICENSE.md"
   ],
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com/@SweenyStudio"
-  },
   "repository": "https://github.com/SweenyStudio/easyblocks.git"
 }
