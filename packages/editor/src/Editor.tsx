@@ -228,8 +228,6 @@ function EditorBackendInitializer(props: EditorProps) {
 
 const EditorWrapper = memo(
   (props: EditorProps & { document: Document | null }) => {
-    console.log("EditorWrapper", props);
-
     if (!props.document) {
       if (props.rootTemplateId) {
         if (props.rootComponentId) {

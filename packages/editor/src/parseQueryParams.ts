@@ -18,16 +18,36 @@ export function parseQueryParams() {
 
   const preview = searchParams.get("preview") === "true";
 
-  const editorSearchParams: EditorParams = {
+  const commonParams = {
     readOnly,
-    documentId,
-    templateId,
-    rootComponentId,
-    rootTemplateId,
     locale,
     preview,
     debug,
   };
 
-  return editorSearchParams;
+  let editorSearchParams;
+
+  if (documentId) {
+    editorSearchParams = {
+      documentId,
+      ...commonParams,
+    };
+  } else if (rootComponentId) {
+    editorSearchParams = {
+      rootComponentId,
+      ...commonParams,
+    };
+  } else if (rootTemplateId) {
+    editorSearchParams = {
+      rootTemplateId,
+      ...commonParams,
+    };
+  } else if (templateId) {
+    editorSearchParams = {
+      templateId,
+      ...commonParams,
+    };
+  }
+
+  return editorSearchParams as EditorParams;
 }

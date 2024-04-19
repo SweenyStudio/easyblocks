@@ -57,8 +57,6 @@ export function EasyblocksParent(props: EasyblocksParentProps) {
       ? props.editorParams
       : parseQueryParams();
 
-  console.log("editorParams", editorParams);
-
   return (
     <StyleSheetManager
       shouldForwardProp={shouldForwardProp}
@@ -80,9 +78,19 @@ export function EasyblocksParent(props: EasyblocksParentProps) {
             config={props.config}
             locale={editorParams.locale ?? undefined}
             readOnly={editorParams.readOnly ?? true}
-            documentId={editorParams.documentId}
-            rootComponentId={editorParams.rootComponentId ?? null}
-            rootTemplateId={editorParams.rootTemplateId}
+            documentId={
+              "documentId" in editorParams ? editorParams.documentId : null
+            }
+            rootComponentId={
+              "rootComponentId" in editorParams
+                ? editorParams.rootComponentId
+                : null
+            }
+            rootTemplateId={
+              "rootTemplateId" in editorParams
+                ? editorParams.rootTemplateId
+                : null
+            }
             externalData={props.externalData}
             onExternalDataChange={props.onExternalDataChange}
             widgets={{

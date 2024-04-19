@@ -114,16 +114,18 @@ export type InternalWidgetComponentProps = Omit<
   path: string;
 };
 
-export type EditorParams = {
-  readOnly: boolean | null;
-  documentId: string | null;
-  templateId: string | null;
-  rootComponentId: string | null;
-  rootTemplateId: string | null;
-  locale: string | null;
-  preview: boolean;
-  debug: boolean;
+type CommonEditorParams = {
+  readOnly?: boolean | null;
+  locale?: string | null;
+  preview?: boolean;
+  debug?: boolean;
 };
+
+export type EditorParams =
+  | ({ documentId: string } & CommonEditorParams)
+  | ({ rootComponentId: string } & CommonEditorParams)
+  | ({ rootTemplateId: string } & CommonEditorParams)
+  | ({ templateId: string } & CommonEditorParams);
 
 export type EditorModeProps =
   | { editorMode?: "asPage" }

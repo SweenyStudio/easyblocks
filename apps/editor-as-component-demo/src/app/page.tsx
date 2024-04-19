@@ -219,14 +219,8 @@ export default function Page() {
     <EasyblocksEditor
       editorMode="asComponent"
       editorParams={{
-        readOnly: false,
         rootComponentId: "DummyBanner",
-        rootTemplateId: null,
-        documentId: null,
-        templateId: null,
-        locale: null,
-        preview: false,
-        debug: false,
+        readOnly: false,
       }}
       config={easyblocksConfig}
       components={{ DummyBanner }}
