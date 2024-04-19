@@ -1,3 +1,28 @@
+// "use client";
+
+// import Editor from "./_components/editor";
+
+// if (!process.env.NEXT_PUBLIC_EASYBLOCKS_ACCESS_TOKEN) {
+//   throw new Error("Missing NEXT_PUBLIC_EASYBLOCKS_ACCESS_TOKEN");
+// }
+
+// export default function EeasyblocksEditorPage() {
+//   return (
+//     <Editor
+//       editorParams={{
+//         readOnly: false,
+//         rootComponentId: "DummyBanner",
+//         rootTemplateId: null,
+//         documentId: null,
+//         templateId: null,
+//         locale: null,
+//         preview: false,
+//         debug: false,
+//       }}
+//     />
+//   );
+// }
+
 "use client";
 
 import { EasyblocksEditor, type EditorParams } from "@easyblocks/editor";
@@ -189,15 +214,20 @@ function DummyBanner(props: { Root: ReactElement; Title: ReactElement }) {
   );
 }
 
-export default function Editor({
-  editorParams,
-}: {
-  editorParams: EditorParams;
-}) {
+export default function Page() {
   return (
     <EasyblocksEditor
       editorMode="asComponent"
-      editorParams={editorParams}
+      editorParams={{
+        readOnly: false,
+        rootComponentId: "DummyBanner",
+        rootTemplateId: null,
+        documentId: null,
+        templateId: null,
+        locale: null,
+        preview: false,
+        debug: false,
+      }}
       config={easyblocksConfig}
       components={{ DummyBanner }}
     />
