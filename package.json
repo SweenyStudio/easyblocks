@@ -6,6 +6,7 @@
     "nuke": "./scripts/nuke.sh",
     "clean": "./scripts/clean.sh",
     "build": "nx run-many --target build --exclude website",
+    "build:packages": "nx run-many --target build --exclude dashboard-demo, design-system-app, editor-as-componenent-demo, liquid-demo, page-builder-demo, quick-start",
     "test": "nx run-many --target test",
     "lint": "nx affected --target lint --base origin/main -- --quiet",
     "lint:packages": "nx run-many --target lint --projects '@easyblocks/*' -- --quiet",
