@@ -7,13 +7,14 @@ import {
   WidgetComponentProps,
 } from "@easyblocks/core";
 import React, { ComponentType } from "react";
+import { EditorModeProps } from "./types";
 
 export type ExternalDataChangeHandler = (
   externalData: RequestedExternalData,
   contextParams: ContextParams
 ) => void;
 
-export type EasyblocksEditorProps = {
+type CommonProps = {
   config: Config;
   externalData?: ExternalData;
   onExternalDataChange?: ExternalDataChangeHandler;
@@ -23,6 +24,7 @@ export type EasyblocksEditorProps = {
     | ComponentType<WidgetComponentProps<any>>
     | ComponentType<InlineTypeWidgetComponentProps<any>>
   >;
-
   __debug?: boolean;
 };
+
+export type EasyblocksEditorProps = CommonProps & EditorModeProps;

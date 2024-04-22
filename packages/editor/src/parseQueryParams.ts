@@ -1,13 +1,4 @@
-type EditorSearchParams = {
-  readOnly: boolean | null;
-  documentId: string | null;
-  templateId: string | null;
-  rootComponentId: string | null;
-  rootTemplateId: string | null;
-  locale: string | null;
-  preview: boolean;
-  debug: boolean;
-};
+import { EditorParams } from "./types";
 
 export function parseQueryParams() {
   const searchParams = new URLSearchParams(window.location.search);
@@ -27,16 +18,36 @@ export function parseQueryParams() {
 
   const preview = searchParams.get("preview") === "true";
 
-  const editorSearchParams: EditorSearchParams = {
+  const commonParams = {
     readOnly,
-    documentId,
-    templateId,
-    rootComponentId,
-    rootTemplateId,
     locale,
     preview,
     debug,
   };
 
-  return editorSearchParams;
+  let editorSearchParams;
+
+  if (documentId) {
+    editorSearchParams = {
+      documentId,
+      ...commonParams,
+    };
+  } else if (rootComponentId) {
+    editorSearchParams = {
+      rootComponentId,
+      ...commonParams,
+    };
+  } else if (rootTemplateId) {
+    editorSearchParams = {
+      rootTemplateId,
+      ...commonParams,
+    };
+  } else if (templateId) {
+    editorSearchParams = {
+      templateId,
+      ...commonParams,
+    };
+  }
+
+  return editorSearchParams as EditorParams;
 }

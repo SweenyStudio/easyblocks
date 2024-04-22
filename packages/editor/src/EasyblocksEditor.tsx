@@ -11,13 +11,18 @@ export function EasyblocksEditor(props: EasyblocksEditorProps) {
     "parent" | "child" | "preview" | null
   >(null);
 
+  const editorParams =
+    props.editorMode === "asComponent"
+      ? props.editorParams
+      : parseQueryParams();
+
   const setSelectedWindowToParent = () => {
     window.isShopstoryEditor = true;
     setSelectedWindow("parent");
   };
 
   useEffect(() => {
-    if (parseQueryParams().preview) {
+    if (editorParams.preview) {
       setSelectedWindow("preview");
       return;
     }
@@ -49,20 +54,34 @@ export function EasyblocksEditor(props: EasyblocksEditorProps) {
     return null;
   }
 
-  if (parseQueryParams().debug) {
+  if (editorParams.debug) {
     props = addDebugToEditorProps(props);
   }
 
   return (
     <>
       {selectedWindow === "parent" && (
-        <EasyblocksParent
-          config={props.config}
-          externalData={props.externalData ?? {}}
-          onExternalDataChange={props.onExternalDataChange ?? (() => ({}))}
-          widgets={props.widgets}
-          components={props.components}
-        />
+        <>
+          {props.editorMode === "asComponent" ? (
+            <EasyblocksParent
+              editorMode="asComponent"
+              editorParams={props.editorParams}
+              config={props.config}
+              externalData={props.externalData ?? {}}
+              onExternalDataChange={props.onExternalDataChange ?? (() => ({}))}
+              widgets={props.widgets}
+              components={props.components}
+            />
+          ) : (
+            <EasyblocksParent
+              config={props.config}
+              externalData={props.externalData ?? {}}
+              onExternalDataChange={props.onExternalDataChange ?? (() => ({}))}
+              widgets={props.widgets}
+              components={props.components}
+            />
+          )}
+        </>
       )}
 
       {selectedWindow === "child" && (
