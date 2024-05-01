@@ -97,9 +97,28 @@ export type Template = TemplateBase & {
 
 export type FieldMixedValue = { __mixed__: true };
 
+export type EditorWindowAPICallbackEventType =
+  | "renderableContent"
+  | "focussedField"
+  | "isEditing"
+  | "externalData"
+  | "currentViewport";
+
 export type EditorWindowAPI = {
   editorContext: EditorContextType;
   onUpdate?: () => void; // this function will be called by parent window when data is changed, child should "subscribe" to this function
+
+  // these callbacks are used by the useEasyblocksEditor hook
+  onUpdateCallbacks?: Array<
+    (eventType: EditorWindowAPICallbackEventType) => void
+  >;
+  subscribe: (
+    callback: (eventType: EditorWindowAPICallbackEventType) => void
+  ) => void;
+  unsubscribe: (
+    callback: (eventType: EditorWindowAPICallbackEventType) => void
+  ) => void;
+
   meta: CompilationMetadata;
   compiled: CompiledShopstoryComponentConfig;
   externalData: ExternalData;
