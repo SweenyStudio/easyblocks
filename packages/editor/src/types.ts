@@ -102,7 +102,8 @@ export type EditorWindowAPICallbackEventType =
   | "focussedField"
   | "isEditing"
   | "externalData"
-  | "currentViewport";
+  | "currentViewport"
+  | "meta";
 
 export type EditorWindowAPI = {
   editorContext: EditorContextType;
