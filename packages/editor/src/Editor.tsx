@@ -914,6 +914,13 @@ const EditorContent = ({
   }, [currentViewport]);
 
   useEffect(() => {
+    window.editorWindowAPI.onUpdateCallbacks &&
+      window.editorWindowAPI.onUpdateCallbacks.forEach((callback) =>
+        callback("meta")
+      );
+  }, [meta]);
+
+  useEffect(() => {
     if (window.editorWindowAPI.onUpdate) {
       window.editorWindowAPI.onUpdate();
     }
