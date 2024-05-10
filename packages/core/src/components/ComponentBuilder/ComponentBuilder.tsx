@@ -45,6 +45,7 @@ import {
 import { Box } from "../Box/Box";
 import { useEasyblocksExternalData } from "../EasyblocksExternalDataProvider";
 import { useEasyblocksMetadata } from "../EasyblocksMetadataProvider";
+import react from "react";
 
 function buildBoxes(
   compiled: any,
@@ -446,6 +447,19 @@ function ComponentBuilder(props: ComponentBuilderProps): ReactElement | null {
     runtime,
     isSelected: __isSelected,
   };
+
+  // merge classnames from tailwilnd into styled so that it is passed to the component
+  if (compiled.classNames) {
+    Object.keys(styled).forEach((key) => {
+      if (compiled.classNames[key]) {
+        if (react.isValidElement(styled[key])) {
+          styled[key] = react.cloneElement(styled[key], {
+            className: compiled.classNames[key],
+          });
+        }
+      }
+    });
+  }
 
   const componentProps = {
     ...restPassedProps,

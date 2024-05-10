@@ -21,6 +21,7 @@ import {
   Template,
   ThemeTokenValue,
   TokenTypeDefinition,
+  NoCodeComponentTailwindFunction,
 } from "../types";
 import { InternalAnyTinaField } from "./schema";
 
@@ -122,6 +123,7 @@ export type InternalRenderableComponentDefinition<
   Params extends Record<string, any> = Record<string, any>
 > = ComponentDefinitionShared<Identifier> & {
   pasteSlots?: string[];
+  tailwind?: NoCodeComponentTailwindFunction;
   styles?: NoCodeComponentStylesFunction<Values, Params>;
   editing?: NoCodeComponentEditingFunction<Values, Params>;
   auto?: NoCodeComponentAutoFunction<Values, Params>;

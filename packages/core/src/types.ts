@@ -397,6 +397,23 @@ export type NoCodeComponentStylesFunction<
   input: NoCodeComponentStylesFunctionInput<Values, Params>
 ) => NoCodeComponentStylesFunctionResult;
 
+export type NoCodeComponentTailwindFunctionResult = {
+  classNames?: { [key: string]: string };
+};
+
+export type NoCodeComponentTailwindFunctionInput<
+  Values extends Record<string, any> = Record<string, any>
+> = {
+  values: Values;
+  tw: (propertyName: string, callback: (property: any) => string) => string;
+};
+
+export type NoCodeComponentTailwindFunction<
+  Values extends Record<string, any> = Record<string, any>
+> = (
+  values: NoCodeComponentTailwindFunctionInput<Values>
+) => NoCodeComponentTailwindFunctionResult;
+
 export type NoCodeComponentEditingFunctionInput<
   Values extends Record<string, any> = Record<string, any>,
   Params extends Record<string, any> = Record<string, any>
@@ -446,6 +463,7 @@ export type NoCodeComponentDefinition<
   schema: Array<SchemaProp>;
   type?: string | string[];
   label?: string;
+  tailwind?: NoCodeComponentTailwindFunction<Values>;
   styles?: NoCodeComponentStylesFunction<Values, Params>;
   editing?: NoCodeComponentEditingFunction<Values, Params>;
   auto?: NoCodeComponentAutoFunction<Values, Params>;
@@ -782,6 +800,9 @@ export type CompiledStyled = {
 export type CompiledShopstoryComponentConfig = CompiledCustomComponentConfig & {
   styled: {
     [key: string]: CompiledStyled;
+  };
+  classNames: {
+    [key: string]: string;
   };
 };
 

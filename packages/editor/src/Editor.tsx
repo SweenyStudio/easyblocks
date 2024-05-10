@@ -516,7 +516,7 @@ function calculateViewportRelatedStuff(
   // Calculate width, height and scale
   let width, height: number;
   let scaleFactor: number | null = null;
-  let offsetY: number = 0;
+  let offsetY = 0;
 
   if (!availableSize) {
     // lack of available size (first render) should wait until size is available to perform calculations

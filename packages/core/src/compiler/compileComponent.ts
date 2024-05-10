@@ -83,6 +83,7 @@ import {
   InternalRenderableComponentDefinition,
 } from "./types";
 import { getFallbackLocaleForLocale } from "../locales";
+import { twPrefixHelper } from "./twPrefixHelper";
 
 type ComponentCompilationArtifacts = {
   compiledComponentConfig: CompiledComponentConfig;
@@ -162,6 +163,7 @@ export function compileComponent(
     props: {},
     components: {},
     styled: {},
+    classNames: {},
   };
   let configAfterAuto: any;
   let editingInfo: InternalEditingInfo | undefined;
@@ -638,6 +640,12 @@ export function compileComponent(
 
     editingContextProps = editingInfo.components;
   }
+
+  compiled.classNames =
+    componentDefinition?.tailwind?.({
+      values: configAfterAuto,
+      tw: twPrefixHelper(configAfterAuto),
+    }).classNames ?? {};
 
   compileSubcomponents(
     editableElement,
