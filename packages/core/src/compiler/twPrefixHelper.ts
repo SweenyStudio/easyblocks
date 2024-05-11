@@ -7,11 +7,11 @@ export const twPrefixHelper = (values: any) => {
     if (typeof value === "object" && value.hasOwnProperty("$res")) {
       return [
         callback(value.xs.value),
-        `sm:${callback(value.sm.value)}`,
-        `md:${callback(value.md.value)}`,
-        `lg:${callback(value.lg.value)}`,
-        `xl:${callback(value.xl.value)}`,
-        `2xl:${callback(value["2xl"].value)}`,
+        `sm:${callback(value.sm)}`,
+        `md:${callback(value.md)}`,
+        `lg:${callback(value.lg)}`,
+        `xl:${callback(value.xl)}`,
+        `2xl:${callback(value["2xl"])}`,
       ].join(" ");
     } else {
       return callback(value);

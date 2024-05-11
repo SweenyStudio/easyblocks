@@ -39,6 +39,8 @@ import {
   SpaceSchemaProp,
   TrulyResponsiveValue,
   CompiledComponentConfig,
+  DeviceRange,
+  NoCodeComponentStylesFunctionResult,
 } from "../types";
 import type {
   CompilationCache,
@@ -451,6 +453,11 @@ export function compileComponent(
       editingContextProps = editingInfo.components;
     }
 
+    const allStylesPropsByDevice: Array<{
+      device: DeviceRange;
+      props: NoCodeComponentStylesFunctionResult["props"];
+    }> = [];
+
     const { props, components, styled } = resop2(
       { values: compiledValues, params: ownPropsAfterAuto.params },
       ({ values, params }, breakpointIndex) => {
@@ -481,11 +488,60 @@ export function compileComponent(
             : {}),
         };
 
-        return renderableComponentDefinition.styles(stylesInput);
+        const stylesFunctionOutout =
+          renderableComponentDefinition.styles(stylesInput);
+
+        allStylesPropsByDevice.push({
+          device,
+          props: stylesFunctionOutout.props,
+        });
+
+        return stylesFunctionOutout;
       },
       compilationContext.devices,
       renderableComponentDefinition
     );
+
+    const transformedByPropAndDevice = allStylesPropsByDevice.reduce(
+      (acc, { device, props }) => {
+        if (!props) {
+          return acc;
+        }
+        Object.entries(props).forEach(([key, value]) => {
+          if (!acc[key]) {
+            acc[key] = {};
+          }
+          acc[key][device.id] = value;
+        });
+        return acc;
+      },
+      {} as Record<string, Record<string, any>>
+    );
+
+    const outputObject: Record<string, Record<string, any>> = {};
+
+    Object.entries(transformedByPropAndDevice).forEach(([key, value]) => {
+      const allValues: any[] = [];
+      compilationContext.devices.forEach((device) => {
+        allValues.push(value[device.id]);
+      });
+      const uniqueValues = Array.from(new Set(allValues));
+      if (uniqueValues.length === 1) {
+        outputObject[key] = uniqueValues[0];
+      } else {
+        outputObject[key] = {
+          $res: true,
+          ...value,
+        };
+      }
+    });
+
+    compiled.classNames =
+      componentDefinition?.tailwind?.({
+        propsOutput: outputObject,
+        isEditing: compilationContext.isEditing ?? false,
+        tw: twPrefixHelper(outputObject),
+      }).classNames ?? {};
 
     validateStylesProps(props, componentDefinition);
 
@@ -640,12 +696,6 @@ export function compileComponent(
 
     editingContextProps = editingInfo.components;
   }
-
-  compiled.classNames =
-    componentDefinition?.tailwind?.({
-      values: configAfterAuto,
-      tw: twPrefixHelper(configAfterAuto),
-    }).classNames ?? {};
 
   compileSubcomponents(
     editableElement,

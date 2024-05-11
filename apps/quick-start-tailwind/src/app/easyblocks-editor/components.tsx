@@ -5,6 +5,7 @@ export function DummyBanner(props: {
   DummyComponent: ReactElement;
 }) {
   const { Root, DummyComponent } = props;
+  console.log("DummyBanner", props);
 
   return (
     <Root.type {...Root.props} as="div">
@@ -15,6 +16,7 @@ export function DummyBanner(props: {
 
 export function DummySelectable(props: { Root: ReactElement }) {
   const { Root } = props;
+  console.log("DummySelectable", props);
 
   return (
     <Root.type {...Root.props} as="div">

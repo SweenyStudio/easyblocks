@@ -18,8 +18,8 @@ export const DummySelectableDefinition: NoCodeComponentDefinition = {
       defaultValue: "pt-0",
     },
   ],
-  tailwind: ({ values, tw }) => {
-    const pt = tw("paddingTop", (v) => v);
+  tailwind: ({ tw }) => {
+    const pt = tw("pt", (v) => v);
 
     return {
       classNames: {
@@ -30,9 +30,10 @@ export const DummySelectableDefinition: NoCodeComponentDefinition = {
   styles: ({ values, device, isEditing, params }) => {
     return {
       styled: {
-        Root: {
-          // still need to
-        },
+        Root: {},
+      },
+      props: {
+        pt: values.paddingTop,
       },
     };
   },
@@ -80,9 +81,11 @@ export const DummyBannerDefinition: NoCodeComponentDefinition = {
       defaultValue: "pt-10",
     },
   ],
-  tailwind: ({ values, tw }) => {
-    const bg = tw("backgroundColor", (v) => `bg-[${v}]`);
-    const pt = tw("paddingTop", (v) => `${v}`);
+  tailwind: ({ propsOutput, tw }) => {
+    console.log(propsOutput);
+
+    const bg = tw("bg", (v) => `bg-[${v}]`);
+    const pt = tw("pt", (v) => `${v}`);
 
     return {
       classNames: {
@@ -92,11 +95,26 @@ export const DummyBannerDefinition: NoCodeComponentDefinition = {
   },
   styles: ({ values, device, isEditing, params }) => {
     return {
+      // these values get used by the styles - because we aren't using this we put placeholders for the components
+      //if we exclued the placeholders it doesn't work
       styled: {
-        Root: {
-          // still need to
-        },
+        Root: {},
         DummyComponent: {},
+      },
+
+      // these values get passed to the styles function under params for the component referenced
+      // not releveant for tailwind because it's for the next component - but we can use it still
+      // to pass variables to the next component in the chain
+      components: {
+        DummyComponent: {
+          test: 1,
+        },
+      },
+
+      // these values get passed directly to the component - we can do calculations here and use them in tailwind
+      props: {
+        bg: values.backgroundColor,
+        pt: values.paddingTop,
       },
     };
   },

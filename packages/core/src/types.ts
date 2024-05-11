@@ -404,7 +404,8 @@ export type NoCodeComponentTailwindFunctionResult = {
 export type NoCodeComponentTailwindFunctionInput<
   Values extends Record<string, any> = Record<string, any>
 > = {
-  values: Values;
+  propsOutput: Values;
+  isEditing: boolean;
   tw: (propertyName: string, callback: (property: any) => string) => string;
 };
 
