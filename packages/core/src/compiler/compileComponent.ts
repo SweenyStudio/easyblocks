@@ -83,6 +83,7 @@ import {
   InternalRenderableComponentDefinition,
 } from "./types";
 import { getFallbackLocaleForLocale } from "../locales";
+import { twPrefexHelper } from "./twPrefixHelper";
 
 type ComponentCompilationArtifacts = {
   compiledComponentConfig: CompiledComponentConfig;
@@ -162,6 +163,7 @@ export function compileComponent(
     props: {},
     components: {},
     styled: {},
+    classNames: {},
   };
   let configAfterAuto: any;
   let editingInfo: InternalEditingInfo | undefined;
@@ -479,11 +481,60 @@ export function compileComponent(
             : {}),
         };
 
-        return renderableComponentDefinition.styles(stylesInput);
+        const stylesFunctionOutout =
+          renderableComponentDefinition.styles(stylesInput);
+        return stylesFunctionOutout;
       },
       compilationContext.devices,
       renderableComponentDefinition
     );
+    compiled.classNames = {};
+
+    const removePropsWithUnderscoreFromNestedObjectsAndArrays = (
+      obj: any
+    ): any => {
+      if (Array.isArray(obj)) {
+        return obj.map((x: any) =>
+          removePropsWithUnderscoreFromNestedObjectsAndArrays(x)
+        );
+      }
+
+      if (typeof obj === "object") {
+        const newObj: any = {};
+        for (const key in obj) {
+          if (key.startsWith("_")) {
+            continue;
+          }
+
+          newObj[key] = removePropsWithUnderscoreFromNestedObjectsAndArrays(
+            obj[key]
+          );
+        }
+
+        return newObj;
+      }
+
+      return obj;
+    };
+
+    if (componentDefinition.tailwind) {
+      const tailwindContext = {
+        styles: {
+          props: removePropsWithUnderscoreFromNestedObjectsAndArrays(props),
+          components:
+            removePropsWithUnderscoreFromNestedObjectsAndArrays(components),
+        },
+        params: removePropsWithUnderscoreFromNestedObjectsAndArrays(
+          ownPropsAfterAuto.params
+        ),
+        props: removePropsWithUnderscoreFromNestedObjectsAndArrays(
+          ownPropsAfterAuto.values
+        ),
+        isEditing: !!compilationContext.isEditing,
+        tw: twPrefexHelper(compilationContext.devices),
+      };
+      compiled.classNames = componentDefinition.tailwind(tailwindContext);
+    }
 
     validateStylesProps(props, componentDefinition);
 

@@ -15,6 +15,7 @@ import {
   NoCodeComponentEditingFunction,
   NoCodeComponentEntry,
   NoCodeComponentStylesFunction,
+  NoCodeComponentTailwindFunction,
   ResponsiveValue,
   SchemaProp,
   Spacing,
@@ -122,6 +123,7 @@ export type InternalRenderableComponentDefinition<
   Params extends Record<string, any> = Record<string, any>
 > = ComponentDefinitionShared<Identifier> & {
   pasteSlots?: string[];
+  tailwind?: NoCodeComponentTailwindFunction;
   styles?: NoCodeComponentStylesFunction<Values, Params>;
   editing?: NoCodeComponentEditingFunction<Values, Params>;
   auto?: NoCodeComponentAutoFunction<Values, Params>;
