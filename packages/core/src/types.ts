@@ -397,22 +397,25 @@ export type NoCodeComponentStylesFunction<
   input: NoCodeComponentStylesFunctionInput<Values, Params>
 ) => NoCodeComponentStylesFunctionResult;
 
-export type NoCodeComponentTailwindFunctionResult = {
-  classNames?: { [key: string]: string };
-};
+export type NoCodeComponentTailwindFunctionResult<
+  Values extends Record<string, any> = Record<string, any>
+> = Values;
 
 export type NoCodeComponentTailwindFunctionInput<
-  Values extends Record<string, any> = Record<string, any>
+  Value extends Record<string, any> = Record<string, any>
 > = {
-  propsOutput: Values;
+  styles: {
+    props: Value;
+    components: Value;
+  };
+  params: Value;
+  props: Value;
   isEditing: boolean;
-  tw: (propertyName: string, callback: (property: any) => string) => string;
+  tw: (value: any, callback: (value: any) => string) => string;
 };
 
-export type NoCodeComponentTailwindFunction<
-  Values extends Record<string, any> = Record<string, any>
-> = (
-  values: NoCodeComponentTailwindFunctionInput<Values>
+export type NoCodeComponentTailwindFunction = (
+  values: NoCodeComponentTailwindFunctionInput
 ) => NoCodeComponentTailwindFunctionResult;
 
 export type NoCodeComponentEditingFunctionInput<
@@ -464,7 +467,7 @@ export type NoCodeComponentDefinition<
   schema: Array<SchemaProp>;
   type?: string | string[];
   label?: string;
-  tailwind?: NoCodeComponentTailwindFunction<Values>;
+  tailwind?: NoCodeComponentTailwindFunction;
   styles?: NoCodeComponentStylesFunction<Values, Params>;
   editing?: NoCodeComponentEditingFunction<Values, Params>;
   auto?: NoCodeComponentAutoFunction<Values, Params>;

@@ -15,13 +15,13 @@ import {
   NoCodeComponentEditingFunction,
   NoCodeComponentEntry,
   NoCodeComponentStylesFunction,
+  NoCodeComponentTailwindFunction,
   ResponsiveValue,
   SchemaProp,
   Spacing,
   Template,
   ThemeTokenValue,
   TokenTypeDefinition,
-  NoCodeComponentTailwindFunction,
 } from "../types";
 import { InternalAnyTinaField } from "./schema";
 

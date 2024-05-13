@@ -39,8 +39,6 @@ import {
   SpaceSchemaProp,
   TrulyResponsiveValue,
   CompiledComponentConfig,
-  DeviceRange,
-  NoCodeComponentStylesFunctionResult,
 } from "../types";
 import type {
   CompilationCache,
@@ -85,7 +83,7 @@ import {
   InternalRenderableComponentDefinition,
 } from "./types";
 import { getFallbackLocaleForLocale } from "../locales";
-import { twPrefixHelper } from "./twPrefixHelper";
+import { twPrefexHelper } from "./twPrefixHelper";
 
 type ComponentCompilationArtifacts = {
   compiledComponentConfig: CompiledComponentConfig;
@@ -453,11 +451,6 @@ export function compileComponent(
       editingContextProps = editingInfo.components;
     }
 
-    const allStylesPropsByDevice: Array<{
-      device: DeviceRange;
-      props: NoCodeComponentStylesFunctionResult["props"];
-    }> = [];
-
     const { props, components, styled } = resop2(
       { values: compiledValues, params: ownPropsAfterAuto.params },
       ({ values, params }, breakpointIndex) => {
@@ -490,58 +483,58 @@ export function compileComponent(
 
         const stylesFunctionOutout =
           renderableComponentDefinition.styles(stylesInput);
-
-        allStylesPropsByDevice.push({
-          device,
-          props: stylesFunctionOutout.props,
-        });
-
         return stylesFunctionOutout;
       },
       compilationContext.devices,
       renderableComponentDefinition
     );
+    compiled.classNames = {};
 
-    const transformedByPropAndDevice = allStylesPropsByDevice.reduce(
-      (acc, { device, props }) => {
-        if (!props) {
-          return acc;
-        }
-        Object.entries(props).forEach(([key, value]) => {
-          if (!acc[key]) {
-            acc[key] = {};
-          }
-          acc[key][device.id] = value;
-        });
-        return acc;
-      },
-      {} as Record<string, Record<string, any>>
-    );
-
-    const outputObject: Record<string, Record<string, any>> = {};
-
-    Object.entries(transformedByPropAndDevice).forEach(([key, value]) => {
-      const allValues: any[] = [];
-      compilationContext.devices.forEach((device) => {
-        allValues.push(value[device.id]);
-      });
-      const uniqueValues = Array.from(new Set(allValues));
-      if (uniqueValues.length === 1) {
-        outputObject[key] = uniqueValues[0];
-      } else {
-        outputObject[key] = {
-          $res: true,
-          ...value,
-        };
+    const removePropsWithUnderscoreFromNestedObjectsAndArrays = (
+      obj: any
+    ): any => {
+      if (Array.isArray(obj)) {
+        return obj.map((x: any) =>
+          removePropsWithUnderscoreFromNestedObjectsAndArrays(x)
+        );
       }
-    });
 
-    compiled.classNames =
-      componentDefinition?.tailwind?.({
-        propsOutput: outputObject,
-        isEditing: compilationContext.isEditing ?? false,
-        tw: twPrefixHelper(outputObject),
-      }).classNames ?? {};
+      if (typeof obj === "object") {
+        const newObj: any = {};
+        for (const key in obj) {
+          if (key.startsWith("_")) {
+            continue;
+          }
+
+          newObj[key] = removePropsWithUnderscoreFromNestedObjectsAndArrays(
+            obj[key]
+          );
+        }
+
+        return newObj;
+      }
+
+      return obj;
+    };
+
+    if (componentDefinition.tailwind) {
+      const tailwindContext = {
+        styles: {
+          props: removePropsWithUnderscoreFromNestedObjectsAndArrays(props),
+          components:
+            removePropsWithUnderscoreFromNestedObjectsAndArrays(components),
+        },
+        params: removePropsWithUnderscoreFromNestedObjectsAndArrays(
+          ownPropsAfterAuto.params
+        ),
+        props: removePropsWithUnderscoreFromNestedObjectsAndArrays(
+          ownPropsAfterAuto.values
+        ),
+        isEditing: !!compilationContext.isEditing,
+        tw: twPrefexHelper(compilationContext.devices),
+      };
+      compiled.classNames = componentDefinition.tailwind(tailwindContext);
+    }
 
     validateStylesProps(props, componentDefinition);
 

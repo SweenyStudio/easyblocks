@@ -18,15 +18,6 @@ export const DummySelectableDefinition: NoCodeComponentDefinition = {
       defaultValue: "pt-0",
     },
   ],
-  tailwind: ({ tw }) => {
-    const pt = tw("pt", (v) => v);
-
-    return {
-      classNames: {
-        Root: `${pt}`,
-      },
-    };
-  },
   styles: ({ values, device, isEditing, params }) => {
     return {
       styled: {
@@ -81,16 +72,12 @@ export const DummyBannerDefinition: NoCodeComponentDefinition = {
       defaultValue: "pt-10",
     },
   ],
-  tailwind: ({ propsOutput, tw }) => {
-    console.log(propsOutput);
-
-    const bg = tw("bg", (v) => `bg-[${v}]`);
-    const pt = tw("pt", (v) => `${v}`);
+  tailwind: ({ props, params, styles, tw }) => {
+    const bg = tw(props.backgroundColor, (p) => `bg-[${p}]`);
+    const pt = tw(props.paddingTop, (p) => p);
 
     return {
-      classNames: {
-        Root: `${bg} ${pt}`,
-      },
+      Root: `${bg} ${pt}`,
     };
   },
   styles: ({ values, device, isEditing, params }) => {
@@ -99,7 +86,6 @@ export const DummyBannerDefinition: NoCodeComponentDefinition = {
       //if we exclued the placeholders it doesn't work
       styled: {
         Root: {},
-        DummyComponent: {},
       },
 
       // these values get passed to the styles function under params for the component referenced
