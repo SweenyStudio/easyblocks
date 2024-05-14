@@ -19,13 +19,6 @@ export const DummySelectableDefinition: NoCodeComponentDefinition = {
     },
   ],
   styles: ({ values, device, isEditing, params }) => {
-    console.log("DummySelectableDefinition", {
-      values,
-      device,
-      isEditing,
-      params,
-    });
-
     return {
       styled: {
         Root: {},
@@ -113,13 +106,19 @@ export const DummyBannerDefinition: NoCodeComponentDefinition = {
 
     // console.log("dataItemProps", { dataItemProps });
 
+    const ItemWrappers = values.DummyComponentCollection.map((c: any) => {
+      return `bg-[${values.backgroundColor}]`;
+    });
+
     return {
       styled: {
         Root: {},
+        ItemWrappers: ItemWrappers.map((i: any) => ({})),
       },
       props: {
         tw: {
           Root: `bg-[${values.backgroundColor}] pt-[${values.padding}]`,
+          ItemWrappers,
         },
       },
     };

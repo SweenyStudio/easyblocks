@@ -49,15 +49,6 @@ export default function EeasyblocksEditorPage() {
               } else if (typeof value === "object" || Array.isArray(value)) {
                 result += ` ${JSON.stringify(value)}`;
               }
-              // Object.entries(obj[key]).forEach(([key, value]) => {
-              //   if (typeof value === "string") {
-              //     result += ` ${value}`;
-              //   } else if (typeof value === "object" || Array.isArray(value)) {
-              //     result += ` ${JSON.stringify(value)}`;
-              //   }
-              //   console.log("CSS", { value });
-              //   result += ` ${value}`;
-              // });
             } else {
               traverse(obj[key]);
             }
