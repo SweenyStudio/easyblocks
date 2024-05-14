@@ -783,9 +783,6 @@ export type CompiledShopstoryComponentConfig = CompiledCustomComponentConfig & {
   styled: {
     [key: string]: CompiledStyled;
   };
-  classNames: {
-    [key: string]: string;
-  };
 };
 
 export type CompiledComponentConfig = CompiledShopstoryComponentConfig;

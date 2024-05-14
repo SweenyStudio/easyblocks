@@ -9,6 +9,18 @@ import useMemoizedState from "./useMemomizedState";
 
 const tailwind = createTailwindcss({
   tailwindConfig: {
+    theme: {
+      extend: {
+        screens: {
+          xs: `568px`,
+          sm: `768px`,
+          md: `992px`,
+          lg: `1280px`,
+          xl: `1600px`,
+          "2xl": `1920px`,
+        },
+      },
+    },
     // disable normalize css
     corePlugins: { preflight: false },
   },
@@ -30,16 +42,22 @@ export default function EeasyblocksEditorPage() {
           obj.forEach(traverse);
         } else if (typeof obj === "object" && obj !== null) {
           for (const key in obj) {
-            if (key.startsWith("tw")) {
-              Object.entries(obj[key]).forEach(([key, value]) => {
-                if (typeof value === "string") {
-                  result += ` ${value}`;
-                } else if (typeof value === "object" || Array.isArray(value)) {
-                  result += ` ${JSON.stringify(value)}`;
-                }
-                console.log("CSS", { value });
+            if (key.startsWith("__className")) {
+              const value = obj[key];
+              if (typeof value === "string") {
                 result += ` ${value}`;
-              });
+              } else if (typeof value === "object" || Array.isArray(value)) {
+                result += ` ${JSON.stringify(value)}`;
+              }
+              // Object.entries(obj[key]).forEach(([key, value]) => {
+              //   if (typeof value === "string") {
+              //     result += ` ${value}`;
+              //   } else if (typeof value === "object" || Array.isArray(value)) {
+              //     result += ` ${JSON.stringify(value)}`;
+              //   }
+              //   console.log("CSS", { value });
+              //   result += ` ${value}`;
+              // });
             } else {
               traverse(obj[key]);
             }
@@ -57,6 +75,8 @@ export default function EeasyblocksEditorPage() {
           const stringForTailwind = traverseAndExtractClasses(
             window.parent.editorWindowAPI?.compiled
           );
+          console.log(window.parent.editorWindowAPI);
+          console.log(stringForTailwind);
           const generatedCss = await tailwind.generateStylesFromContent(
             `
               /* without the "@tailwind base;" */
