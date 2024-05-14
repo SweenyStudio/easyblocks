@@ -45,7 +45,6 @@ import {
 import { Box } from "../Box/Box";
 import { useEasyblocksExternalData } from "../EasyblocksExternalDataProvider";
 import { useEasyblocksMetadata } from "../EasyblocksMetadataProvider";
-import react from "react";
 
 function buildBoxes(
   compiled: any,
@@ -448,17 +447,103 @@ function ComponentBuilder(props: ComponentBuilderProps): ReactElement | null {
     isSelected: __isSelected,
   };
 
-  // merge classnames from tailwilnd into styled so that it is passed to the component
-  if (compiled.classNames) {
-    Object.keys(styled).forEach((key) => {
-      if (compiled.classNames[key]) {
-        if (react.isValidElement(styled[key])) {
-          styled[key] = react.cloneElement(styled[key], {
-            className: compiled.classNames[key],
+  interface ClassNames {
+    values: {
+      size: string;
+      value: string;
+    }[];
+  }
+  interface ComponentProps {
+    name: string;
+    classNames: ClassNames[];
+  }
+
+  if (shopstoryCompiledConfig.props.tw) {
+    if (shopstoryCompiledConfig.props.tw.$res) {
+      const components: ComponentProps[] = [];
+
+      // transpose the values to the components
+      const nonRes = Object.entries(shopstoryCompiledConfig.props.tw).filter(
+        ([key]) => key != "$res"
+      );
+      for (const [key, value] of nonRes) {
+        const size = key;
+        for (const [componentName, classes] of Object.entries(value as any)) {
+          const splitClasses = (classes as string).split(" ");
+          const component = components.find((c) => c.name === componentName);
+          if (component) {
+            let idx = 0;
+            for (const c of splitClasses) {
+              const className = component.classNames[idx];
+              className.values.push({ size, value: c });
+              idx++;
+            }
+          } else {
+            const newComponent: ComponentProps = {
+              name: componentName,
+              classNames: [],
+            };
+            for (const c of splitClasses) {
+              newComponent.classNames.push({
+                values: [{ size, value: c }],
+              });
+            }
+            components.push(newComponent);
+          }
+        }
+      }
+
+      const finalComponents: { name: string; className: string }[] = [];
+
+      // remove duplicates
+      for (const component of components) {
+        let finalComponent = finalComponents.find(
+          (c) => c.name === component.name
+        );
+        if (!finalComponent) {
+          finalComponent = { name: component.name, className: "" };
+          finalComponents.push(finalComponent);
+        }
+        for (const className of component.classNames) {
+          let first = true;
+          let prev = "";
+          let outputClassName = "";
+          for (const sizeObj of meta.vars.devices) {
+            const size = sizeObj.id;
+            const idx = className.values.findIndex((v) => v.size === size);
+            if (idx > -1) {
+              if (first) {
+                outputClassName = className.values[idx].value;
+                first = false;
+              } else {
+                if (prev !== className.values[idx].value) {
+                  outputClassName +=
+                    " " + `${size}:${className.values[idx].value}`;
+                }
+              }
+              prev = className.values[idx].value;
+            }
+          }
+          finalComponent.className += outputClassName + " ";
+        }
+      }
+
+      for (const component of finalComponents) {
+        if (React.isValidElement(styled[component.name])) {
+          styled[component.name] = React.cloneElement(styled[component.name], {
+            className: component.className,
           });
         }
       }
-    });
+    } else {
+      Object.keys(shopstoryCompiledConfig.props.tw).forEach((key) => {
+        if (React.isValidElement(styled[key])) {
+          styled[key] = React.cloneElement(styled[key], {
+            className: shopstoryCompiledConfig.props.tw[key],
+          });
+        }
+      });
+    }
   }
 
   const componentProps = {

@@ -19,6 +19,13 @@ export const DummySelectableDefinition: NoCodeComponentDefinition = {
     },
   ],
   styles: ({ values, device, isEditing, params }) => {
+    console.log("DummySelectableDefinition", {
+      values,
+      device,
+      isEditing,
+      params,
+    });
+
     return {
       styled: {
         Root: {},
@@ -56,8 +63,25 @@ export const DummyBannerDefinition: NoCodeComponentDefinition = {
     {
       prop: "DummyComponent",
       type: "component",
-      required: false,
       accepts: ["DummySelectable"],
+    },
+    {
+      prop: "DummyComponentCollection",
+      type: "component-collection",
+      accepts: ["DummySelectable"],
+      itemFields: [
+        {
+          prop: "test",
+          type: "select",
+          params: {
+            options: [
+              { label: "1", value: "bg-red-200" },
+              { label: "2", value: "bg-yellow-200" },
+            ],
+          },
+          defaultValue: "1",
+        },
+      ],
     },
     {
       prop: "paddingTop",
@@ -72,35 +96,31 @@ export const DummyBannerDefinition: NoCodeComponentDefinition = {
       defaultValue: "pt-10",
     },
   ],
-  tailwind: ({ props, params, styles, tw }) => {
-    const bg = tw(props.backgroundColor, (p) => `bg-[${p}]`);
-    const pt = tw(props.paddingTop, (p) => p);
+  // tailwind: ({ props, params, styles, tw }) => {
+  //   const bg = tw(props.backgroundColor, (p) => `bg-[${p}]`);
+  //   const pt = tw(props.paddingTop, (p) => p);
+
+  //   return {
+  //     Root: `${bg} ${pt}`,
+  //   };
+  // },
+  styles: ({ values, device, isEditing, params }) => {
+    // console.log("DummyComponentDefinition", { values });
+
+    // const dataItemProps = values.DummyComponentCollection.map((c: any) => {
+    //   return { tw: c.test };
+    // });
+
+    // console.log("dataItemProps", { dataItemProps });
 
     return {
-      Root: `${bg} ${pt}`,
-    };
-  },
-  styles: ({ values, device, isEditing, params }) => {
-    return {
-      // these values get used by the styles - because we aren't using this we put placeholders for the components
-      //if we exclued the placeholders it doesn't work
       styled: {
         Root: {},
       },
-
-      // these values get passed to the styles function under params for the component referenced
-      // not releveant for tailwind because it's for the next component - but we can use it still
-      // to pass variables to the next component in the chain
-      components: {
-        DummyComponent: {
-          test: 1,
-        },
-      },
-
-      // these values get passed directly to the component - we can do calculations here and use them in tailwind
       props: {
-        bg: values.backgroundColor,
-        pt: values.paddingTop,
+        tw: {
+          Root: `bg-[${values.backgroundColor}] pt-[${values.padding}]`,
+        },
       },
     };
   },

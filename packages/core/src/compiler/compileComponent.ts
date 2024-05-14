@@ -83,7 +83,6 @@ import {
   InternalRenderableComponentDefinition,
 } from "./types";
 import { getFallbackLocaleForLocale } from "../locales";
-import { twPrefexHelper } from "./twPrefixHelper";
 
 type ComponentCompilationArtifacts = {
   compiledComponentConfig: CompiledComponentConfig;
@@ -516,25 +515,6 @@ export function compileComponent(
 
       return obj;
     };
-
-    if (componentDefinition.tailwind) {
-      const tailwindContext = {
-        styles: {
-          props: removePropsWithUnderscoreFromNestedObjectsAndArrays(props),
-          components:
-            removePropsWithUnderscoreFromNestedObjectsAndArrays(components),
-        },
-        params: removePropsWithUnderscoreFromNestedObjectsAndArrays(
-          ownPropsAfterAuto.params
-        ),
-        props: removePropsWithUnderscoreFromNestedObjectsAndArrays(
-          ownPropsAfterAuto.values
-        ),
-        isEditing: !!compilationContext.isEditing,
-        tw: twPrefexHelper(compilationContext.devices),
-      };
-      compiled.classNames = componentDefinition.tailwind(tailwindContext);
-    }
 
     validateStylesProps(props, componentDefinition);
 

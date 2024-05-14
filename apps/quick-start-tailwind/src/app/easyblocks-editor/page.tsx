@@ -19,6 +19,7 @@ export default function EeasyblocksEditorPage() {
 
   useEffect(() => {
     console.log("CSS updated");
+    console.log(css);
   }, [css]);
 
   useEffect(() => {
@@ -29,8 +30,14 @@ export default function EeasyblocksEditorPage() {
           obj.forEach(traverse);
         } else if (typeof obj === "object" && obj !== null) {
           for (const key in obj) {
-            if (key.startsWith("classNames")) {
+            if (key.startsWith("tw")) {
               Object.entries(obj[key]).forEach(([key, value]) => {
+                if (typeof value === "string") {
+                  result += ` ${value}`;
+                } else if (typeof value === "object" || Array.isArray(value)) {
+                  result += ` ${JSON.stringify(value)}`;
+                }
+                console.log("CSS", { value });
                 result += ` ${value}`;
               });
             } else {
@@ -45,7 +52,7 @@ export default function EeasyblocksEditorPage() {
     }
 
     const callback = (eventType: string) => {
-      if (eventType === "meta") {
+      if (eventType === "meta" || eventType === "renderableContent") {
         const createTailwind = async () => {
           const stringForTailwind = traverseAndExtractClasses(
             window.parent.editorWindowAPI?.compiled

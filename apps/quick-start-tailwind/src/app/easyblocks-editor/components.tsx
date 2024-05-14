@@ -7,9 +7,14 @@ export function DummyBanner(props: {
 }) {
   const { Root, DummyComponent, DummyComponentCollection } = props;
 
+  console.log("DummyBanner", { props });
+
   return (
     <Root.type {...Root.props}>
       <DummyComponent.type {...DummyComponent.props} />
+      {DummyComponentCollection.map((DummyComponent, index) => (
+        <DummyComponent.type key={index} {...DummyComponent.props} />
+      ))}
     </Root.type>
   );
 }

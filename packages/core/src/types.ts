@@ -397,27 +397,6 @@ export type NoCodeComponentStylesFunction<
   input: NoCodeComponentStylesFunctionInput<Values, Params>
 ) => NoCodeComponentStylesFunctionResult;
 
-export type NoCodeComponentTailwindFunctionResult<
-  Values extends Record<string, any> = Record<string, any>
-> = Values;
-
-export type NoCodeComponentTailwindFunctionInput<
-  Value extends Record<string, any> = Record<string, any>
-> = {
-  styles: {
-    props: Value;
-    components: Value;
-  };
-  params: Value;
-  props: Value;
-  isEditing: boolean;
-  tw: (value: any, callback: (value: any) => string) => string;
-};
-
-export type NoCodeComponentTailwindFunction = (
-  values: NoCodeComponentTailwindFunctionInput
-) => NoCodeComponentTailwindFunctionResult;
-
 export type NoCodeComponentEditingFunctionInput<
   Values extends Record<string, any> = Record<string, any>,
   Params extends Record<string, any> = Record<string, any>
@@ -467,7 +446,6 @@ export type NoCodeComponentDefinition<
   schema: Array<SchemaProp>;
   type?: string | string[];
   label?: string;
-  tailwind?: NoCodeComponentTailwindFunction;
   styles?: NoCodeComponentStylesFunction<Values, Params>;
   editing?: NoCodeComponentEditingFunction<Values, Params>;
   auto?: NoCodeComponentAutoFunction<Values, Params>;
