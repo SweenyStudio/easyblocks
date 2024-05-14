@@ -693,6 +693,7 @@ export function compileComponent(
   }
 
   if (compiled.props.tw) {
+    console.log("compiled.props.tw", compiled.props.tw);
     if (compiled.props.tw.$res) {
       const components: ComponentProps[] = [];
 
@@ -700,9 +701,46 @@ export function compileComponent(
       const nonRes = Object.entries(compiled.props.tw).filter(
         ([key]) => key != "$res"
       );
-      for (const [key, value] of nonRes) {
+
+      // flatten the components
+      interface Flattened {
+        [key: string]: {
+          [key: string]: string;
+        };
+      }
+
+      let flattened: Flattened = {};
+
+      nonRes.forEach(([key, value]) => {
+        const size = key;
+        Object.entries(value as any).forEach(([componentName, classes]) => {
+          console.log(classes);
+          if (Array.isArray(classes)) {
+            classes.forEach((c, idx) => {
+              flattened = {
+                ...flattened,
+                [size]: {
+                  ...flattened[size],
+                  [`${componentName}-IDX${idx}`]: c,
+                },
+              };
+            });
+          } else {
+            flattened = {
+              ...flattened,
+              [size]: {
+                ...flattened[size],
+                [componentName]: classes as string,
+              },
+            };
+          }
+        });
+      });
+
+      Object.entries(flattened).forEach(([key, value]) => {
         const size = key;
         for (const [componentName, classes] of Object.entries(value as any)) {
+          console.log(classes);
           const splitClasses = (classes as string).split(" ");
           const component = components.find((c) => c.name === componentName);
           if (component) {
@@ -725,7 +763,7 @@ export function compileComponent(
             components.push(newComponent);
           }
         }
-      }
+      });
 
       const finalComponents: { name: string; className: string }[] = [];
 
@@ -762,25 +800,68 @@ export function compileComponent(
         }
       }
 
-      for (const component of finalComponents) {
-        compiled.styled[component.name].__className = component.className;
-        // if (React.isValidElement(styled[component.name])) {
-        //   styled[component.name] = React.cloneElement(styled[component.name], {
-        //     className: component.className,
-        //   });
-        // }
+      // convert array components back to arrays
+      const finalComponentsWithArrays = [];
+      const finalComponentsContainingIDX = finalComponents.filter((c) =>
+        c.name.includes("IDX")
+      );
+      const finalComponentsWithoutIDX = finalComponents.filter(
+        (c) => !c.name.includes("IDX")
+      );
+      for (const component of finalComponentsWithoutIDX) {
+        finalComponentsWithArrays.push({
+          name: component.name,
+          className: component.className.trim(),
+        });
+      }
+
+      const uniqueFinalComponentsWithIDXNames = finalComponentsContainingIDX
+        .map((c) => c.name.split("-IDX")[0])
+        .filter((v, i, a) => a.indexOf(v) === i);
+
+      for (const name of uniqueFinalComponentsWithIDXNames) {
+        const component = finalComponentsContainingIDX.filter((c) =>
+          c.name.startsWith(name)
+        );
+        const className = component.map((c) => c.className.trim()).join(" ");
+        const existingComponent = finalComponentsWithArrays.find(
+          (c) => c.name === name
+        );
+        if (!existingComponent) {
+          finalComponentsWithArrays.push({
+            name: name.split("-IDX")[0],
+            className: [className],
+          });
+        } else {
+          if (Array.isArray(existingComponent.className)) {
+            existingComponent.className.push(className);
+          }
+        }
+      }
+
+      for (const component of finalComponentsWithArrays) {
+        if (Array.isArray(component.className)) {
+          component.className.forEach((val, idx) => {
+            compiled.styled[component.name][idx].__className = val;
+          });
+        } else {
+          compiled.styled[component.name].__className = component.className;
+        }
       }
     } else {
       Object.keys(compiled.props.tw).forEach((key) => {
-        compiled.styled[key].__className = compiled.props.tw[key];
-        // if (React.isValidElement(styled[key])) {
-        //   styled[key] = React.cloneElement(styled[key], {
-        //     className: shopstoryCompiledConfig.props.tw[key],
-        //   });
-        // }
+        if (Array.isArray(compiled.styled[key])) {
+          compiled.styled[key].forEach((styledComponent: any, idx: number) => {
+            styledComponent.__className = compiled.props.tw[key][idx];
+          });
+        } else {
+          compiled.styled[key].__className = compiled.props.tw[key];
+        }
       });
     }
   }
+
+  console.log({ styled: compiled.styled });
 
   cache.set(ownProps.values._id, {
     values: ownProps,
