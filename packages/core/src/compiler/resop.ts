@@ -366,7 +366,7 @@ export function resop2(
           if (typeof value === "string" && value !== null) {
             scalarOutputs[device.id].styled![name] = {};
           } else if (Array.isArray(value)) {
-            scalarOutputs[device.id].styled![name] = [];
+            scalarOutputs[device.id].styled![name] = value.map((v) => ({}));
           }
         }
       );
