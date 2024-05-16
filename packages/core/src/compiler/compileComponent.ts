@@ -703,8 +703,6 @@ export function compileComponent(
         ([key]) => key != "$res"
       );
 
-      console.log({ nonRes });
-
       // flatten the components
       interface Flatten {
         [key: string]: {
@@ -745,21 +743,6 @@ export function compileComponent(
         });
       });
 
-      // if (flattened.sm.StackContainer) {
-      //   console.log({
-      //     StackContainer: {
-      //       xs: flattened.xs?.StackContainer,
-      //       sm: flattened.sm?.StackContainer,
-      //       md: flattened.md?.StackContainer,
-      //       lg: flattened.lg?.StackContainer,
-      //       xl: flattened.xl?.StackContainer,
-      //       "2xl": flattened["2xl"]?.StackContainer,
-      //     },
-      //   });
-      // } else {
-      //   console.log({ flattened });
-      // }
-
       interface Reversed {
         [key: string]: {
           [key: string]: any;
@@ -780,8 +763,6 @@ export function compileComponent(
           };
         });
       });
-
-      console.log({ reversed });
 
       interface Component {
         name: string;
@@ -872,42 +853,38 @@ export function compileComponent(
       });
 
       // convert array components back to arrays
-      const finalComponentsWithArrays = [];
+
       const finalComponentsContainingIDX = finalComponents.filter((c) =>
         c.name.includes("IDX")
       );
       const finalComponentsWithoutIDX = finalComponents.filter(
         (c) => !c.name.includes("IDX")
       );
-      for (const component of finalComponentsWithoutIDX) {
-        finalComponentsWithArrays.push({
-          name: component.name,
-          className: component.className.trim(),
-        });
+
+      interface finalComponentsWithArrays {
+        name: string;
+        className: string | string[];
       }
+
+      const finalComponentsWithArrays: finalComponentsWithArrays[] = [
+        ...finalComponentsWithoutIDX,
+      ];
 
       const uniqueFinalComponentsWithIDXNames = finalComponentsContainingIDX
         .map((c) => c.name.split("-IDX")[0])
         .filter((v, i, a) => a.indexOf(v) === i);
 
       for (const name of uniqueFinalComponentsWithIDXNames) {
-        const component = finalComponentsContainingIDX.filter((c) =>
+        const components = finalComponentsContainingIDX.filter((c) =>
           c.name.startsWith(name)
         );
-        const className = component.map((c) => c.className.trim()).join(" ");
-        const existingComponent = finalComponentsWithArrays.find(
-          (c) => c.name === name
-        );
-        if (!existingComponent) {
-          finalComponentsWithArrays.push({
-            name: name.split("-IDX")[0],
-            className: [className],
-          });
-        } else {
-          if (Array.isArray(existingComponent.className)) {
-            existingComponent.className.push(className);
-          }
-        }
+
+        const newComponent = {
+          name,
+          className: components.map((c) => c.className),
+        };
+
+        finalComponentsWithArrays.push(newComponent);
       }
 
       for (const component of finalComponentsWithArrays) {
@@ -923,9 +900,19 @@ export function compileComponent(
       Object.keys(compiled.props.tw).forEach((key) => {
         if (Array.isArray(compiled.styled[key])) {
           compiled.styled[key].forEach((styledComponent: any, idx: number) => {
+            if (!styledComponent) {
+              throw new Error(
+                `Tailwind component ${key} is not defined in the styled object for the component ${compiled._component}`
+              );
+            }
             styledComponent.__className = compiled.props.tw[key][idx];
           });
         } else {
+          if (!compiled.styled[key]) {
+            throw new Error(
+              `Tailwind component ${key} is not defined in the styled object for the component ${compiled._component}`
+            );
+          }
           compiled.styled[key].__className = compiled.props.tw[key];
         }
       });
