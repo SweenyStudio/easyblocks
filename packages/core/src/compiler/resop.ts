@@ -352,6 +352,25 @@ export function resop2(
   // run callback for scalar configs
   devices.forEach((device) => {
     scalarOutputs[device.id] = callback(scalarInputs[device.id], device.id);
+
+    // add styles for twProps - this is so we can leave the styles object empty in the schema
+    if (scalarOutputs[device.id].props?.tw) {
+      if (
+        typeof !scalarOutputs[device.id].styled != "object" ||
+        scalarOutputs[device.id].styled === undefined
+      ) {
+        scalarOutputs[device.id].styled = {};
+      }
+      Object.entries(scalarOutputs[device.id].props?.tw).forEach(
+        ([name, value]) => {
+          if (typeof value === "string" && value !== null) {
+            scalarOutputs[device.id].styled![name] = {};
+          } else if (Array.isArray(value)) {
+            scalarOutputs[device.id].styled![name] = [];
+          }
+        }
+      );
+    }
   });
 
   /**
