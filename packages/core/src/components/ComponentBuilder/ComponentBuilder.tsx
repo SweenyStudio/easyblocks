@@ -447,8 +447,6 @@ function ComponentBuilder(props: ComponentBuilderProps): ReactElement | null {
     isSelected: __isSelected,
   };
 
-  console.log({ styledPrior: styled });
-
   // move the classname from __compiled into the props
   Object.keys(styled).forEach((key) => {
     if (Array.isArray(styled[key])) {
@@ -462,14 +460,6 @@ function ComponentBuilder(props: ComponentBuilderProps): ReactElement | null {
         return element;
       });
       styled[key] = newArray;
-      // styled[key].forEach((element: any) => {
-      //   if (element?.props?.__compiled?.__className) {
-      //     const className = element.props.__compiled.__className;
-      //     element = React.cloneElement(element, {
-      //       className: className,
-      //     });
-      //   }
-      // });
     } else {
       if (styled[key]?.props?.__compiled?.__className) {
         const className = styled[key].props.__compiled.__className;
@@ -479,8 +469,6 @@ function ComponentBuilder(props: ComponentBuilderProps): ReactElement | null {
       }
     }
   });
-
-  console.log({ styledFinal: styled });
 
   const componentProps = {
     ...restPassedProps,
