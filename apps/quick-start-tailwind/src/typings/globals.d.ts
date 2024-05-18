@@ -1,4 +1,4 @@
-import { EditorWindowAPI } from "@SweenyStudio/easyblocks-editor";
+import { EditorWindowAPI } from "@easyblocks/editor";
 
 declare global {
   interface Window {

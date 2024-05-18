@@ -49,6 +49,14 @@ export const DummyBannerDefinition: NoCodeComponentDefinition = {
       },
     },
     {
+      prop: "dummyColor",
+      label: "Dummy Color",
+      type: "color",
+      defaultValue: {
+        tokenId: "white",
+      },
+    },
+    {
       prop: "padding",
       label: "Pading",
       type: "space",
@@ -107,17 +115,19 @@ export const DummyBannerDefinition: NoCodeComponentDefinition = {
     // console.log("dataItemProps", { dataItemProps });
 
     const ItemWrappers = values.DummyComponentCollection.map((c: any) => {
-      return `bg-[${values.backgroundColor}]`;
+      return `bg-[${values.dummyColor}]`;
     });
 
     return {
-      styled: {
-        Root: {},
-        ItemWrappers: ItemWrappers.map((i: any) => ({})),
-      },
+      // styled: {
+      //   // Root: {},
+      //   // ItemWrappers: ItemWrappers.map((i: any) => ({})),
+      // },
       props: {
         tw: {
-          Root: `bg-[${values.backgroundColor}] pt-[${values.padding}]`,
+          Root: `bg-[${values.backgroundColor}] lg-[${values.padding}] ${
+            device.id === "sm" ? "top-0" : ""
+          }`,
           ItemWrappers,
         },
       },
