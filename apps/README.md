@@ -6,7 +6,7 @@ for each project within the workspace which messes up the node resolution algori
 both of them uses the same version of `react`, but each package owns its own copy. These can lead to bugs with resolving correct
 dispatcher, correct context etc. We want our apps to treat our internal packages as real NPM packages and treat all of its 3rd party
 dependencies as peer dependencies. To make our apps work this way we modify our apps Webpack configs by putting apps `node_modules` directory
-to be first directory to look for external modules ex.
+to be first directory to look for external modules ex. Test
 
 ```js
 const nextConfig = {
